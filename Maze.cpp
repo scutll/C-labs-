@@ -14,6 +14,7 @@ using namespace std;
 //	The following enumerated type indicates directions within the maze
 
 enum Direction {DOWN, LEFT, UP, RIGHT};
+			//  0     1     2   3
 
 //	This struct is used for locations within the maze
 
@@ -83,7 +84,7 @@ void SolveMaze()
 	{
 		posi[i]=pos;
 		i++;
-		if(i>=289)
+		if(i>=289) //17*17
 		{
 			cout<<"array too small\n";
 			abort();
@@ -136,6 +137,7 @@ void FindEntrance(int& pos)
 
 bool AtExit(int pos)
 {
+	//在最后一层即可
 	return (pos >= (mazeHeight-1)*mazeWidth);
 }
 
@@ -150,6 +152,8 @@ bool AtExit(int pos)
 //	This function takes a maze position and a heading and determines
 //	the position to the right of this position
 
+
+//实现一个向右的功能，在当前方向的基础上将右转一格的位置给right
 void WheresRight(int pos, Direction heading, int& right)
 {
 	right=pos;
@@ -190,22 +194,54 @@ bool Wall(int pos)
 
 void TurnRight(Direction& heading)
 {
+	heading = static_cast<Direction>((heading + 1) % 4);
+	//使用static_cast转换类型，且实现在当前方向的基础上向右转
 	//to be finished.
 }
 
 //	This function changes position in the maze by determining
 //	the next position in the current direction
 
+//已经保证前面没有墙，可以直接走
 void MoveForward(int& pos, Direction heading)
 {
+	switch (heading)
+	{
+	case DOWN:
+		pos += mazeWidth;
+		break;
+	case UP:
+		pos -= mazeWidth;
+		break;
+	case LEFT:
+		pos -= 1;
+		break;
+	case RIGHT:
+		pos += 1;
+	}
 	//to be finished.
 }
 
 //	This function determines the position in the direction
 //	currently heading
 
+//在当前方向基础上给出前方一格的位置
 void WheresAhead(int pos, Direction heading, int& ahead)
 {
+	ahead = pos;
+	switch (heading){
+		case UP:
+			ahead -= mazeWidth;
+			break;
+		case DOWN:
+			ahead += mazeWidth;
+			break;
+		case LEFT:
+			ahead--;
+			break;
+		case RIGHT:
+			ahead++;
+	}
 	//to be finished.
 }
 
@@ -213,5 +249,6 @@ void WheresAhead(int pos, Direction heading, int& ahead)
 
 void TurnLeft(Direction& heading)
 {
+	heading = static_cast<Direction>((heading + 3) % 4);
 	//to be finished.
 }
