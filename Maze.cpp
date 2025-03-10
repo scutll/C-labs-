@@ -27,9 +27,11 @@ struct Position
 //	All other locations in the maze can be any other character
 //	Global variables defining the maze to be solved
 
-char maze[17*17];
+// char maze[17*17];
 int mazeWidth, mazeHeight;
-int posi[17*17];
+// int posi[17*17];
+char *maze_ = nullptr;
+int *posi_ = nullptr;
 int i=0;
 //	These functions provide access to the maze
 //	as well as provide manipulation of direction
@@ -57,9 +59,11 @@ bool LoadMaze(const char fname[])
 	if (ifs.good())
 	{
 		ifs >> mazeWidth >> mazeHeight;
+		maze_ = new char[(mazeWidth * mazeHeight)];
+		posi_ = new int[(mazeWidth * mazeHeight)];
 		for (int i=0;i<mazeHeight;i++)
 			for (int j=0;j<mazeWidth;j++)
-				ifs >> maze[i*mazeWidth+j];
+				ifs >> maze_[i*mazeWidth+j];
 		ifs.close();
 		return true;
 	}
@@ -84,14 +88,14 @@ void SolveMaze()
 	{
 		// posi[i]=pos;
 		// i++;
-		if (i == 0 || (i>0 && posi[i - 1] != pos))
+		if (i == 0 || (i>0 && posi_[i - 1] != pos))
 		{
-			if (i > 1 && posi[i - 2] == pos)
+			if (i > 1 && posi_[i - 2] == pos)
 			{
 				i--;
 			}
 			else
-				posi[i++] = pos;
+				posi_[i++] = pos;
 		}//剪枝
 
 
@@ -115,7 +119,7 @@ void SolveMaze()
 				TurnLeft(heading);
 		}
 	}
-	posi[i]=pos;
+	posi_[i]=pos;
 	i++;
 	if(i>=400)
 	{
@@ -125,13 +129,15 @@ void SolveMaze()
 	int counter=0;
 	for(int j=0;j<i;j++)
 	{
-		if(posi[j]<0)
+		if(posi_[j]<0)
 			continue;
-		cout << "Current position: (" << posi[j]/mazeWidth << ',' << posi[j]%mazeWidth << ')' << endl;
+		cout << "Current position: (" << posi_[j]/mazeWidth << ',' << posi_[j]%mazeWidth << ')' << endl;
 		counter++;
 	}
 	cout<<"total steps:"<<counter<<endl;
 	cout << "Maze solved" << endl;
+	delete[] maze_;
+	delete[] posi_;
 }
 
 //	This function scans the maze array for the first non-wall item
@@ -197,7 +203,7 @@ void WheresRight(int pos, Direction heading, int& right)
 
 bool Wall(int pos)
 {
-	return (maze[pos] == '#');
+	return (maze_[pos] == '#');
 }
 
 //	This function changes heading by turning right
