@@ -86,7 +86,7 @@ void SolveMaze()
 	heading = DOWN;
 	while (!AtExit(pos))
 	{
-		// posi[i]=pos;
+		// posi_[i]=pos;
 		// i++;
 		if (i == 0 || (i>0 && posi_[i - 1] != pos))
 		{
