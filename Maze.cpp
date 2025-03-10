@@ -82,8 +82,19 @@ void SolveMaze()
 	heading = DOWN;
 	while (!AtExit(pos))
 	{
-		posi[i]=pos;
-		i++;
+		// posi[i]=pos;
+		// i++;
+		if (i == 0 || (i>0 && posi[i - 1] != pos))
+		{
+			if (i > 1 && posi[i - 2] == pos)
+			{
+				i--;
+			}
+			else
+				posi[i++] = pos;
+		}//剪枝
+
+
 		if(i>=289) //17*17
 		{
 			cout<<"array too small\n";
