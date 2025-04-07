@@ -201,6 +201,8 @@ Borrower read_borrower_info_from_type(){
     return man;
 }
 
+
+//save
 void Library::save(const string path){
 
     cout << "saving: " << path << endl;
@@ -261,6 +263,7 @@ void Borrower::save(fstream& fout){
     fout.write(reinterpret_cast<const char *>(&len), sizeof(size_t));
     fout.write(last_name.c_str(), len);
 
+    fout.write(reinterpret_cast<const char *>(&borrow_nums), sizeof(int));
     for (int cnt = 0; cnt < borrow_nums ; cnt++){
         len = 4;
         fout.write(book_ids[cnt]->c_str(), len);
@@ -279,6 +282,9 @@ void Catalogue::save(fstream& fout){
     }
 }
 
+
+
+//load
 void Library::load(const string path){
     cout << "loading :" << path << endl;
     fstream fin(path, std::ios_base::in | std::ios_base::binary);
@@ -291,17 +297,18 @@ void Library::load(const string path){
 
     //书本
     books.load(fin);
-
-
+    
     fin.read(reinterpret_cast<char *>(&borrowers), sizeof(int));
-
-
-
+    
+    
+    
     //读者
     int cnt = 0;
     while (cnt != borrowers)
     {
-        readers[cnt++]->load(fin);
+        readers[cnt] = new Borrower;
+        readers[cnt]->load(fin);
+        cnt++;
     }
 
     cout << "load finished!" << endl;
@@ -333,25 +340,27 @@ void BookRecord::load(fstream& fin){
 }
 
 void Borrower::load(fstream& fin){
-    fin.read(reinterpret_cast<char*>(&id), sizeof(int));
 
+    fin.read(reinterpret_cast<char*>(&id), sizeof(int));
     size_t len;
 
+    cout << id << endl;
     fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
     first_name.resize(len);
     fin.read(&first_name[0], len);
-
+    
     fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
     last_name.resize(len);
     fin.read(&last_name[0], len);
     fin.read(reinterpret_cast<char*>(&borrow_nums), sizeof(int));
 
-    // 读取 book_ids
+    cout << borrow_nums << endl;
+    //  读取 book_ids
     for (int cnt = 0; cnt < borrow_nums; cnt++) {
         len = 4;
         book_ids[cnt] = new string();
         book_ids[cnt]->resize(len);
-        fin.read(&((*book_ids[cnt])[0]), len);
+        fin.read(&(*book_ids[cnt])[0], len);
     }
 }
 
@@ -363,3 +372,4 @@ void Catalogue::load(fstream& fin){
         records[cnt]->load(fin);
     }
 }
+

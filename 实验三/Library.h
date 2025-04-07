@@ -66,6 +66,7 @@ private:
 
 public:
     void set_borrow_num(int n) { borrow_nums = n;}
+    Borrower(){}
     // ~Borrower();
     Borrower(int id_,const string last,const string first):id(id_),last_name(last),first_name(first),borrow_nums(0){}
     void borrow_book(string book_id);   //将id添加到ids里面，是否有该书或id是否规范由Library判断
