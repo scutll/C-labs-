@@ -207,13 +207,15 @@ void Library::save(const string path){
     fstream fout(path, std::ios_base::out | std::ios_base::binary);
 
     fout.seekp(std::ios_base::beg);
-    fout.write(reinterpret_cast<char*>(record_book), sizeof(int)); //到时要读入的书本数
-    fout.write(reinterpret_cast<char*>(borrowers), sizeof(int));   //要读入的读者数
-
-
+    if(!fout.is_open()){
+        std::cerr << "fail to open file!" << endl;
+        exit(0);
+    }
+    
     //书本
     books.save(fout);
-
+    
+    fout.write(reinterpret_cast<const char*>(&borrowers), sizeof(int));   //要读入的读者数
     //读者
     int cnt = 0;
     while (cnt != borrowers)
@@ -225,6 +227,7 @@ void Library::save(const string path){
 }
 
 void BookRecord::save(fstream& fout){
+
     size_t len = book_id.size();
     fout.write(reinterpret_cast<const char *>(&len), sizeof(size_t));
     fout.write(book_id.c_str(), len);
@@ -268,6 +271,10 @@ void Borrower::save(fstream& fout){
 void Catalogue::save(fstream& fout){
     fout.write(reinterpret_cast<const char*>(&record_of_books), sizeof(int));
     for (int cnt = 0; cnt < record_of_books ; cnt++){
+        if(records[cnt] == nullptr){
+            std::cerr << "Nullptr!" << endl;
+            exit(0);
+        }
         records[cnt]->save(fout);
     }
 }
@@ -277,12 +284,18 @@ void Library::load(const string path){
     fstream fin(path, std::ios_base::in | std::ios_base::binary);
     fin.seekg(std::ios_base::beg);
 
-    fin.read(reinterpret_cast<char*>(record_book), sizeof(int));
-    fin.read(reinterpret_cast<char *>(borrowers), sizeof(int));
-
+    if(!fin.is_open()){
+        std::cerr << "fail to open file!" << endl;
+        exit(0);
+    }
 
     //书本
     books.load(fin);
+
+
+    fin.read(reinterpret_cast<char *>(&borrowers), sizeof(int));
+
+
 
     //读者
     int cnt = 0;
@@ -295,16 +308,58 @@ void Library::load(const string path){
 }
 
 void BookRecord::load(fstream& fin){
-    fin.read(reinterpret_cast<char *>(this), sizeof(BookRecord));
+    size_t len;
+
+    fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
+    book_id.resize(len);
+    fin.read(&book_id[0], len);
+
+    fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
+    book_title.resize(len);
+    fin.read(&book_title[0], len);
+
+    fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
+    author_first_name.resize(len);
+    fin.read(&author_first_name[0], len);
+
+    fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
+    author_last_name.resize(len);
+    fin.read(&author_last_name[0], len);
+
+    fin.read(reinterpret_cast<char*>(&year), sizeof(int));
+    fin.read(reinterpret_cast<char*>(&number_of_copies), sizeof(int));
+    fin.read(reinterpret_cast<char*>(&available_copies), sizeof(int));
+
 }
 
 void Borrower::load(fstream& fin){
-    fin.read(reinterpret_cast<char *>(this), sizeof(Borrower));
+    fin.read(reinterpret_cast<char*>(&id), sizeof(int));
+
+    size_t len;
+
+    fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
+    first_name.resize(len);
+    fin.read(&first_name[0], len);
+
+    fin.read(reinterpret_cast<char*>(&len), sizeof(size_t));
+    last_name.resize(len);
+    fin.read(&last_name[0], len);
+    fin.read(reinterpret_cast<char*>(&borrow_nums), sizeof(int));
+
+    // 读取 book_ids
+    for (int cnt = 0; cnt < borrow_nums; cnt++) {
+        len = 4;
+        book_ids[cnt] = new string();
+        book_ids[cnt]->resize(len);
+        fin.read(&((*book_ids[cnt])[0]), len);
+    }
 }
 
 void Catalogue::load(fstream& fin){
-    int cnt = 0;
-    while(cnt != record_of_books){
-        records[cnt++]->load(fin);
+    fin.read(reinterpret_cast<char*>(&record_of_books), sizeof(int));
+    // 读取每本书的记录
+    for (int cnt = 0; cnt < record_of_books; cnt++) {
+        records[cnt] = new BookRecord();
+        records[cnt]->load(fin);
     }
 }

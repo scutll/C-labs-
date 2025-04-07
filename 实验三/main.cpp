@@ -5,7 +5,7 @@ BookRecord read_book_info_from_type();
 Borrower read_borrower_info_from_type();
 Library library;
 
-#define SAVE 
+// #define SAVE 
 
 #ifdef SAVE
 int main(){
