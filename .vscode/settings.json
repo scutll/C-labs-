@@ -41,6 +41,7 @@
         "typeinfo": "cpp",
         "compare": "cpp",
         "format": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "text_encoding": "cpp"
     }
 }
