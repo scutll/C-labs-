@@ -37,6 +37,12 @@ Money &Money::operator-(const Money &money)
 
 AnimalFood::AnimalFood(int type, int cnt) : FoodType(type), amount(cnt) {}
 
+AnimalEnclosure::~AnimalEnclosure(){
+    for (int i = 0; i < animals.size();i++){
+        delete animals[i];
+    }
+}
+
 void AnimalEnclosure::open_() { 
     for(Animal* animal: animals){
         animal->poop();
@@ -291,6 +297,16 @@ zoo::zoo() : profit_all(Money(0, 0)), adult_all(0), children_all(0)
     Elephant *e = new Elephant(666.6, 12.7);
     elephants.Add_Animal(e);
 }
+
+zoo::~zoo(){
+    delete seller;
+    delete keeper;
+
+    monkeys.~AnimalEnclosure();
+    giraffes.~AnimalEnclosure();
+    elephants.~AnimalEnclosure();
+}
+
 
 bool zoo::ADay()
 {

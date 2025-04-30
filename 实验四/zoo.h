@@ -41,6 +41,7 @@ protected:
     int max_eaten;
     int food_eaten;
 public:
+    virtual ~Animal(){}
     bool full() { return max_eaten <= food_eaten; }
     void poop() { food_eaten = 0; }
     Animal(float);
@@ -78,6 +79,7 @@ class AnimalEnclosure{
 
     std::vector<Animal *> animals;
 public:
+    ~AnimalEnclosure();
     AnimalEnclosure() : dust(0), open(true){}
     int closed_length() { return closed_days; }
     void open_();
@@ -166,6 +168,7 @@ class zoo{
     ZooKeeper* keeper;
 
 public:
+    ~zoo();
     zoo();
     bool ADay();
     void Days(int days);
